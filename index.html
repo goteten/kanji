@@ -397,7 +397,7 @@
         ? createRepeatedWord()
         : createFakeWord(template.fixedLength);
       questionElement.innerHTML =
-        `${template.before}<span class="fake-word">${word}${template.type === "okurigana" ? template.after.match(/^[ぁ-ん]+/)?.[0] ?? "" : ""}</span>${template.type === "okurigana" ? template.after.replace(/^[ぁ-ん]+/, "") : template.after}`;
+        `${template.before}<span class="fake-word">${word}</span>${template.after}`;
       instructionElement.textContent = "下線部の言葉の読みを、ひらがなで答えなさい。";
       input.placeholder = "よみを入力";
       numberElement.textContent = String(questionNumber).padStart(2, "0");
