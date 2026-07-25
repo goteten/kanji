@@ -289,7 +289,8 @@
       { before: "夜明けの庭に", after: "が満ちていた。" },
       { before: "彼の話はいつも", after: "い。" },
       { before: "", after: "の儀式を行う。" },
-      { before: "", after: "たる声が響きわたる。", repeatSameKanji: true }
+      { before: "", after: "たる声が響きわたる。", repeatSameKanji: true },
+      { before: "晴天の空、曇天の", after: "。", fixedLength: 1 }
     ];
 
     const questionElement = document.querySelector("#question");
@@ -326,10 +327,10 @@
       return String.fromCodePoint(codePoint);
     }
 
-    function createFakeWord() {
+    function createFakeWord(fixedLength) {
       // 基本は二字熟語。約25%で三字、約5%で四字になります。
       const roll = Math.random();
-      const length = roll < 0.05 ? 4 : roll < 0.30 ? 3 : 2;
+      const length = fixedLength ?? (roll < 0.05 ? 4 : roll < 0.30 ? 3 : 2);
       const characters = [];
 
       while (characters.length < length) {
@@ -349,7 +350,7 @@
       const template = pick(templates);
       const word = template.repeatSameKanji
         ? createRepeatedWord()
-        : createFakeWord();
+        : createFakeWord(template.fixedLength);
       questionElement.innerHTML =
         `${template.before}<span class="fake-word">${word}</span>${template.after}`;
       numberElement.textContent = String(questionNumber).padStart(2, "0");
