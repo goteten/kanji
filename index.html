@@ -259,7 +259,7 @@
 
     <section class="card" aria-labelledby="question">
       <p class="eyebrow">Question <span id="question-number">01</span></p>
-      <p class="instruction">下線部の熟語の読みを、ひらがなで答えなさい。</p>
+      <p class="instruction" id="instruction">下線部の熟語の読みを、ひらがなで答えなさい。</p>
       <p class="question" id="question"></p>
 
       <form id="answer-form">
@@ -284,16 +284,57 @@
   <script>
     // 文章を増やすときは、この配列に { before, after } を追加してください。
     const templates = [
-      { before: "墓前に", after: "を供える。" },
-      { before: "彼は静かに", after: "を見送った。" },
-      { before: "夜明けの庭に", after: "が満ちていた。" },
-      { before: "彼の話はいつも", after: "い。" },
-      { before: "", after: "の儀式を行う。" },
-      { before: "", after: "たる声が響きわたる。", repeatSameKanji: true },
-      { before: "晴天の空、曇天の", after: "。", fixedLength: 1 }
+      // 古典風（16問）
+      { before: "山の端に", after: "の立つを見たり。" },
+      { before: "月影に", after: "の色ぞ映りける。" },
+      { before: "いと", after: "なるもの、庭の隅にあり。" },
+      { before: "かの者、", after: "を携へて参りぬ。" },
+      { before: "夜ふくるままに", after: "の聞こえけり。" },
+      { before: "", after: "を尋ねて野山を越えたり。" },
+      { before: "人々、これを", after: "とぞ呼びける。" },
+      { before: "御前に", after: "を奉る。" },
+      { before: "その姿、いみじく", after: "なり。" },
+      { before: "春になれば", after: "の咲きにけり。" },
+      { before: "", after: "の絶えたること久し。" },
+      { before: "風に従ひて", after: "の漂へり。" },
+      { before: "あやしき", after: "、戸の外に立てり。" },
+      { before: "世に", after: "ほど恐ろしきものなし。" },
+      { before: "", after: "を見て、心おどろきぬ。" },
+      { before: "かくて", after: "は失せにけり。" },
+
+      // 漢文の読み下し風（16問・特定の名文を下敷きにしない創作文）
+      { before: "旅人、暮れに", after: "を野中に認む。" },
+      { before: "老吏、", after: "を案上に置く。" },
+      { before: "村人あい集まりて、", after: "の来たるを待つ。" },
+      { before: "客、門外の", after: "を指して問う。" },
+      { before: "", after: "、風を受けて北庭に移る。" },
+      { before: "山僧、朝ごとに", after: "を清む。" },
+      { before: "郡中に", after: "あり、夜ごとに光を放つ。" },
+      { before: "使者、", after: "を懐にして城を出づ。" },
+      { before: "", after: "ひとたび鳴りて、群鳥ことごとく去る。" },
+      { before: "主人、客に", after: "を示して笑う。" },
+      { before: "", after: "、石間より生じて秋に枯る。" },
+      { before: "書生、", after: "の名を記して師に問う。" },
+      { before: "東窓を開けば、", after: "すでに庭に満つ。" },
+      { before: "", after: "を器に収め、これを高楼に蔵す。" },
+      { before: "夜半、", after: "の声、遠近に響く。", repeatSameKanji: true },
+      { before: "門を出でて", after: "を踏み、しばらく進むことあたわず。" },
+
+      // 送り仮名付きの読み問題（出題時に約30%の確率で選ばれる）
+      { before: "その姿、いと", after: "し。", type: "okurigana" },
+      { before: "月影、", after: "く庭を照らせり。", type: "okurigana" },
+      { before: "かの声、", after: "きこと限りなし。", type: "okurigana" },
+      { before: "山道はいよいよ", after: "くなりぬ。", type: "okurigana" },
+      { before: "風、", after: "しく吹きわたれり。", type: "okurigana" },
+      { before: "旅人、これを見て", after: "みぬ。", type: "okurigana" },
+      { before: "老吏、文を", after: "めて案上に置く。", type: "okurigana" },
+      { before: "使者、門前にて", after: "ぶ。", type: "okurigana" },
+      { before: "群鳥、にわかに", after: "ぎて空に散る。", type: "okurigana" },
+      { before: "山僧、灯を前に", after: "む。", type: "okurigana" }
     ];
 
     const questionElement = document.querySelector("#question");
+    const instructionElement = document.querySelector("#instruction");
     const numberElement = document.querySelector("#question-number");
     const countElement = document.querySelector("#correct-count");
     const form = document.querySelector("#answer-form");
@@ -347,12 +388,18 @@
     }
 
     function showQuestion() {
-      const template = pick(templates);
+      const readingTemplates = templates.filter((template) => template.type !== "okurigana");
+      const okuriganaTemplates = templates.filter((template) => template.type === "okurigana");
+      const template = Math.random() < 0.30
+        ? pick(okuriganaTemplates)
+        : pick(readingTemplates);
       const word = template.repeatSameKanji
         ? createRepeatedWord()
         : createFakeWord(template.fixedLength);
       questionElement.innerHTML =
-        `${template.before}<span class="fake-word">${word}</span>${template.after}`;
+        `${template.before}<span class="fake-word">${word}${template.type === "okurigana" ? template.after.match(/^[ぁ-ん]+/)?.[0] ?? "" : ""}</span>${template.type === "okurigana" ? template.after.replace(/^[ぁ-ん]+/, "") : template.after}`;
+      instructionElement.textContent = "下線部の言葉の読みを、ひらがなで答えなさい。";
+      input.placeholder = "よみを入力";
       numberElement.textContent = String(questionNumber).padStart(2, "0");
       input.value = "";
       input.disabled = false;
