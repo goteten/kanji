@@ -284,6 +284,48 @@
   <script>
     // 文章を増やすときは、この配列に { before, after } を追加してください。
     const templates = [
+      // 現代日本語風（40問）
+      { before: "市は新たに", after: "課を設置した。" },
+      { before: "玄関に", after: "を置いてはいけない。" },
+      { before: "博士は", after: "の大量発生を予測した。" },
+      { before: "この地域では", after: "が主食とされている。" },
+      { before: "午後から局地的な", after: "が予想される。" },
+      { before: "彼は", after: "の資格を三つ持っている。" },
+      { before: "駅前で巨大な", after: "が目撃された。" },
+      { before: "", after: "を冷暗所で保存する。" },
+      { before: "校長は朝礼で", after: "の危険性を訴えた。" },
+      { before: "委員会は", after: "の全面禁止を決定した。" },
+      { before: "このボタンを押すと", after: "が始まります。" },
+      { before: "市民から", after: "に関する苦情が寄せられた。" },
+      { before: "祖父は毎朝", after: "を欠かさない。" },
+      { before: "", after: "を水でよく洗ってから使用する。" },
+      { before: "公園への", after: "の持ち込みは禁止されている。" },
+      { before: "彼女は", after: "の専門家として知られている。" },
+      { before: "警察は現場から", after: "を押収した。" },
+      { before: "来月から", after: "税が導入される。" },
+      { before: "この村では百年に一度", after: "が行われる。" },
+      { before: "", after: "を一日二回服用してください。" },
+      { before: "会議は", after: "の不足により延期された。" },
+      { before: "町内会で", after: "の順番を決める。" },
+      { before: "政府は緊急", after: "宣言を発表した。" },
+      { before: "冷蔵庫の奥から", after: "が発見された。" },
+      { before: "", after: "を利用するには予約が必要です。" },
+      { before: "彼の趣味は", after: "の収集である。" },
+      { before: "この先、", after: "につき通行止め。" },
+      { before: "", after: "を経験した方は係員にお知らせください。" },
+      { before: "工場では一日に三千個の", after: "を生産している。" },
+      { before: "今年の漢字には", after: "が選ばれた。" },
+      { before: "医師から", after: "を控えるように言われた。" },
+      { before: "兄は", after: "だけで一週間生活した。" },
+      { before: "", after: "の音がしたら机の下に隠れてください。" },
+      { before: "受付で", after: "証明書を提示する。" },
+      { before: "この料理には少量の", after: "が含まれている。" },
+      { before: "", after: "を素手で触らないでください。" },
+      { before: "彼は", after: "部の初代部長を務めた。" },
+      { before: "新商品の名前は「濃厚", after: "」に決まった。" },
+      { before: "", after: "が終了するまで電源を切らないでください。" },
+      { before: "この建物は", after: "に耐えられるよう設計されている。" },
+
       // 古典風（16問）
       { before: "山の端に", after: "の立つを見たり。" },
       { before: "月影に", after: "の色ぞ映りける。" },
@@ -330,7 +372,19 @@
       { before: "老吏、文を", after: "めて案上に置く。", type: "okurigana" },
       { before: "使者、門前にて", after: "ぶ。", type: "okurigana" },
       { before: "群鳥、にわかに", after: "ぎて空に散る。", type: "okurigana" },
-      { before: "山僧、灯を前に", after: "む。", type: "okurigana" }
+      { before: "山僧、灯を前に", after: "む。", type: "okurigana" },
+
+      // 現代日本語風・送り仮名付き（10問）
+      { before: "今日は空気が少し", after: "い。", type: "okurigana" },
+      { before: "この布は水にぬれると", after: "くなる。", type: "okurigana" },
+      { before: "彼は突然", after: "んで走り出した。", type: "okurigana" },
+      { before: "説明書をよく", after: "んでください。", type: "okurigana" },
+      { before: "鍋を弱火で", after: "める。", type: "okurigana" },
+      { before: "出発前に荷物を", after: "える。", type: "okurigana" },
+      { before: "大切な書類を机に", after: "した。", type: "okurigana" },
+      { before: "係員の指示に従って", after: "んでください。", type: "okurigana" },
+      { before: "このレバーを手前に", after: "く。", type: "okurigana" },
+      { before: "異常を感じたら直ちに", after: "してください。", type: "okurigana" }
     ];
 
     const questionElement = document.querySelector("#question");
