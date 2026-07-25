@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="熟語の読みを答える漢字テスト。">
+  <title>漢字読みテスト</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #182019;
+      --muted: #68736a;
+      --surface: rgba(255, 255, 255, 0.82);
+      --line: rgba(24, 32, 25, 0.11);
+      --accent: #245d45;
+      --accent-deep: #174432;
+      --success: #1f6849;
+      --shadow: 0 24px 70px rgba(38, 55, 43, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: "Hiragino Sans", "Yu Gothic UI", "Yu Gothic", sans-serif;
+      background:
+        radial-gradient(circle at 15% 15%, rgba(238, 198, 113, 0.35), transparent 28rem),
+        radial-gradient(circle at 85% 80%, rgba(117, 181, 151, 0.32), transparent 30rem),
+        #f4f6f1;
+      display: grid;
+      place-items: center;
+      padding: 28px 18px;
+    }
+
+    .app {
+      width: min(100%, 760px);
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 18px;
+      padding: 0 4px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: var(--accent);
+      box-shadow: 0 8px 20px rgba(36, 93, 69, 0.22);
+    }
+
+    .score {
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .card {
+      position: relative;
+      overflow: hidden;
+      min-height: 500px;
+      padding: clamp(28px, 6vw, 58px);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: 30px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 4px;
+      background: linear-gradient(90deg, #e6b85f, #4a9b74);
+    }
+
+    .eyebrow {
+      margin: 0 0 34px;
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .instruction {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .question {
+      min-height: 126px;
+      margin: 0;
+      font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+      font-size: clamp(1.75rem, 5.2vw, 3.1rem);
+      font-weight: 600;
+      line-height: 1.75;
+      letter-spacing: 0.025em;
+    }
+
+    .fake-word {
+      position: relative;
+      display: inline-block;
+      color: var(--accent-deep);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .fake-word::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      bottom: 0.12em;
+      left: 0;
+      height: 0.14em;
+      border-radius: 1em;
+      background: #e5b653;
+      opacity: 0.7;
+    }
+
+    form {
+      margin-top: 40px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 9px;
+      font-size: 0.88rem;
+      font-weight: 750;
+    }
+
+    .answer-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+    }
+
+    input {
+      width: 100%;
+      min-width: 0;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      outline: none;
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.78);
+      font: inherit;
+      font-size: 1.05rem;
+      transition: border-color 150ms ease, box-shadow 150ms ease;
+    }
+
+    input:focus {
+      border-color: rgba(36, 93, 69, 0.6);
+      box-shadow: 0 0 0 4px rgba(36, 93, 69, 0.1);
+    }
+
+    button {
+      min-height: 54px;
+      padding: 0 24px;
+      border: 0;
+      border-radius: 15px;
+      color: white;
+      background: var(--accent);
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 9px 20px rgba(36, 93, 69, 0.18);
+      transition: transform 120ms ease, background 120ms ease;
+    }
+
+    button:hover { background: var(--accent-deep); }
+    button:active { transform: translateY(1px); }
+
+    .result {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 54px;
+      margin-top: 22px;
+      color: var(--success);
+      font-weight: 800;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+
+    .result.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .check {
+      width: 30px;
+      height: 30px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--success);
+    }
+
+    .next {
+      margin-left: auto;
+      padding: 0;
+      min-height: auto;
+      color: var(--accent);
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .next:hover { background: transparent; color: var(--accent-deep); }
+
+    .hint {
+      margin: 20px 2px 0;
+      color: var(--muted);
+      font-size: 0.78rem;
+      text-align: center;
+    }
+
+    @media (max-width: 560px) {
+      body { padding: 18px 12px; }
+      .card { min-height: 520px; border-radius: 24px; }
+      .answer-row { grid-template-columns: 1fr; }
+      button[type="submit"] { width: 100%; }
+      .result { flex-wrap: wrap; }
+      .next { margin-left: 42px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">読</span>
+        <span>漢字読みテスト</span>
+      </div>
+      <div class="score"><span id="correct-count">0</span> 問正解</div>
+    </header>
+
+    <section class="card" aria-labelledby="question">
+      <p class="eyebrow">Question <span id="question-number">01</span></p>
+      <p class="instruction">下線部の熟語の読みを、ひらがなで答えなさい。</p>
+      <p class="question" id="question"></p>
+
+      <form id="answer-form">
+        <label for="answer">あなたの答え</label>
+        <div class="answer-row">
+          <input id="answer" name="answer" type="text" autocomplete="off"
+                 placeholder="よみを入力" aria-describedby="result-message">
+          <button type="submit">採点する</button>
+        </div>
+      </form>
+
+      <div class="result" id="result" aria-live="polite">
+        <span class="check" aria-hidden="true">✓</span>
+        <span id="result-message">正解です！</span>
+        <button class="next" id="next-button" type="button">次の問題 →</button>
+      </div>
+    </section>
+
+    <p class="hint">落ち着いて、読み方を入力してください。</p>
+  </main>
+
+  <script>
+    // 文章を増やすときは、この配列に { before, after } を追加してください。
+    const templates = [
+      { before: "墓前に", after: "を供える。" },
+      { before: "彼は静かに", after: "を見送った。" },
+      { before: "夜明けの庭に", after: "が満ちていた。" }
+    ];
+
+    const questionElement = document.querySelector("#question");
+    const numberElement = document.querySelector("#question-number");
+    const countElement = document.querySelector("#correct-count");
+    const form = document.querySelector("#answer-form");
+    const input = document.querySelector("#answer");
+    const result = document.querySelector("#result");
+    const resultMessage = document.querySelector("#result-message");
+    const nextButton = document.querySelector("#next-button");
+
+    let questionNumber = 1;
+    let correctCount = 0;
+    let answered = false;
+
+    function pick(items) {
+      return items[Math.floor(Math.random() * items.length)];
+    }
+
+    function randomCodePoint(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function pickKanji() {
+      /*
+       * 漢字リストは持たず、Unicodeの文字コードから直接生成します。
+       * 75%: CJK統合漢字（比較的表示されやすい）
+       * 25%: CJK統合漢字拡張A（珍しい字が多い）
+       */
+      const codePoint = Math.random() < 0.75
+        ? randomCodePoint(0x4E00, 0x9FFF)
+        : randomCodePoint(0x3400, 0x4DBF);
+
+      return String.fromCodePoint(codePoint);
+    }
+
+    function createFakeWord() {
+      // 基本は二字熟語。約25%で三字、約5%で四字になります。
+      const roll = Math.random();
+      const length = roll < 0.05 ? 4 : roll < 0.30 ? 3 : 2;
+      const characters = [];
+
+      while (characters.length < length) {
+        const next = pickKanji();
+        if (!characters.includes(next)) characters.push(next);
+      }
+
+      return characters.join("");
+    }
+
+    function showQuestion() {
+      const template = pick(templates);
+      const word = createFakeWord();
+      questionElement.innerHTML =
+        `${template.before}<span class="fake-word">${word}</span>${template.after}`;
+      numberElement.textContent = String(questionNumber).padStart(2, "0");
+      input.value = "";
+      input.disabled = false;
+      result.classList.remove("visible");
+      answered = false;
+      window.setTimeout(() => input.focus(), 100);
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      if (answered) return;
+
+      const answer = input.value.trim();
+      resultMessage.textContent = answer
+        ? `「${answer}」—— 正解です！`
+        : "無回答。これも正解です！";
+
+      answered = true;
+      correctCount += 1;
+      countElement.textContent = correctCount;
+      input.disabled = true;
+      result.classList.add("visible");
+      nextButton.focus();
+    });
+
+    nextButton.addEventListener("click", () => {
+      questionNumber += 1;
+      showQuestion();
+    });
+
+    showQuestion();
+  </script>
+</body>
+</html>
